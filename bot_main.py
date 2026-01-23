@@ -161,37 +161,37 @@ class Client(discord.Client):
 
         if any(trigger in msg_content for trigger in IP_DROP_TRIGGERS):
             panel_mesaj = """
-            IP: 92.28,211,263 M:43 7462 S
-            S Number. 6979191519182016 IPv
-            6: fe80:5ded: ef69 fb22:19888
-            UPNP Enabled W: 12 4898 DMZ: 1
-            0.112 42.15 MAC 5A783E7E.00 IS
-            P: Ucom Unversal DNS:8.8.8.8 A
-            LT DNS: 1.1.1.8.1 SUBNET MASK:
-            255.255.0.255 DNS SUFFIX: Dli
-            nk WAN: 100.23.10.15 N TYPE: P
-            rivate Nat GATEWAY: 192.168 01
-            UDP OPEN PORTS: 8080,80 TCP O
-            PEN PORTS: 443 ROUTER
-            VENDOR:
-            ERICCSON DEVICE VENDOR: WIN3 X
-            CONNECTION TYPE: Ethernet
-            ICM
-            PHOPS: 192.168.0.1 19216811 10
-            073434 host-66.12012111.ucom.c
-            om 36/13467.189
-            216.239.78111
-            sof02832-in-f14/1e100.net TOTA
-            L HOPS:8 ACTIVE SERVICES: HTTP
-            192.168.3.180-92.28.211.234:8
-            0 HTTP 192.168.3.1:443->92.28.
-            211.234:443 UDP 192.168.0.1.78
-            8->192.168.1. 1:6557 192.168.1
-            .1:67891->92.28.211.234:345 TC
-            P 192.168.54.43.7777-192.168 1
-            .17778 TCP 192.168.78.12:898->
-            192.168.89.966 EXTERNAL MAC 6
-            U 78:89 ER:04 MODEM JUMPS: 64
+IP: 92.28,211,263 M:43 7462 S
+S Number. 6979191519182016 IPv
+6: fe80:5ded: ef69 fb22:19888
+UPNP Enabled W: 12 4898 DMZ: 1
+0.112 42.15 MAC 5A783E7E.00 IS
+P: Ucom Unversal DNS:8.8.8.8 A
+LT DNS: 1.1.1.8.1 SUBNET MASK:
+255.255.0.255 DNS SUFFIX: Dli
+nk WAN: 100.23.10.15 N TYPE: P
+rivate Nat GATEWAY: 192.168 01
+UDP OPEN PORTS: 8080,80 TCP O
+PEN PORTS: 443 ROUTER
+VENDOR:
+ERICCSON DEVICE VENDOR: WIN3 X
+CONNECTION TYPE: Ethernet
+ICM
+PHOPS: 192.168.0.1 19216811 10
+073434 host-66.12012111.ucom.c
+om 36/13467.189
+216.239.78111
+sof02832-in-f14/1e100.net TOTA
+L HOPS:8 ACTIVE SERVICES: HTTP
+192.168.3.180-92.28.211.234:8
+0 HTTP 192.168.3.1:443->92.28.
+211.234:443 UDP 192.168.0.1.78
+8->192.168.1. 1:6557 192.168.1
+.1:67891->92.28.211.234:345 TC
+P 192.168.54.43.7777-192.168 1
+.17778 TCP 192.168.78.12:898->
+192.168.89.966 EXTERNAL MAC 6
+U 78:89 ER:04 MODEM JUMPS: 64
             """
             await message.channel.send(panel_mesaj)
 
