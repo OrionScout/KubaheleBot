@@ -235,6 +235,9 @@ U 78:89 ER:04 MODEM JUMPS: 64
 
     @tasks.loop(seconds=60)
     async def check_league_playtime(self):
+        if not hasattr(self, "tft_players"):
+            self.tft_players = set()
+
         TARGET_GAME = "League of Legends"
 
         for guild in self.guilds:
@@ -243,6 +246,7 @@ U 78:89 ER:04 MODEM JUMPS: 64
                     continue
 
                 is_bannable_league = False
+                is_currently_playing_tft = False
 
                 if member.activities:
                     for activity in member.activities:
@@ -257,15 +261,23 @@ U 78:89 ER:04 MODEM JUMPS: 64
                                 "Teamfight Tactics" in details
                                 or "Teamfight Tactics" in state
                             ):
+                                is_currently_playing_tft = True
                                 is_bannable_league = False
-                                current_time = datetime.now().strftime("%H:%M:%S")
-                                print(
-                                    f"[MODERASYON] {current_time} | {member.name} TfT oynuyor, görmezden gelinecek"
-                                )
                             else:
                                 is_bannable_league = True
 
                             break
+
+                if is_currently_playing_tft:
+                    if member.id not in self.tft_players:
+                        current_time = datetime.now().strftime("%H:%M:%S")
+                        print(
+                            f"[MODERASYON] {current_time} | {member.name} TFT oynuyor, görmezden gelinecek"
+                        )
+                        self.tft_players.add(member.id)
+                else:
+                    if member.id in self.tft_players:
+                        self.tft_players.discard(member.id)
 
                 if is_bannable_league:
                     if member.id in self.safe_users:
@@ -290,7 +302,7 @@ U 78:89 ER:04 MODEM JUMPS: 64
                                 await member.send(
                                     f"{limit} dakikadan uzun süre LoL oynadığın için ban yedin."
                                 )
-                                await guild.ban(member, reason="LoL Limiti Aşıldı")
+                                await guild.ban(member, reason="LoL Limit Exceeded")
                                 print(
                                     f"[MODERASYON] {current_time} | {member.name} BANLANDI"
                                 )
