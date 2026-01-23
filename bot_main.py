@@ -9,7 +9,23 @@ from PIL import Image, ImageEnhance, ImageDraw, ImageFont
 from PIL import ImageOps
 import os
 from keep_alive import keep_alive
+
 keep_alive()
+
+UYGAN_TRIGGERS = ["cagan uygan", "cağan uygan", "çagan uygan", "çağan uygan"]
+
+CAGAN_TRIGGERS = ["cagan", "cağan", "çagan", "çağan"]
+
+IP_DROP_TRIGGERS = [
+    "bittin olum sen",
+    "bittin oğlum sen",
+    "bittin oglum sen",
+    "bittin olm sen",
+    "sen bittin olum",
+    "sen bittin oğlum",
+    "sen bittin oglum",
+    "sen bittin olm",
+]
 
 TECH_SUPPORT_TRIGGERS = [
     "crash",
@@ -33,7 +49,7 @@ TECH_SUPPORT_RESPONSES = [
     "aç kapa yaptın mı kral",
     "driverların güncel mi krşm",
     "hdmi kablosunu anakarta sokmadın di mi la",
-    "ram indirsene",
+    "ram indir knk",
     "kesin anakartı bozdun orosbucocu seni",
     "displayport tam takılı mı kanka",
     "windowsa güncelleme geldiyse ondandır knks",
@@ -103,7 +119,12 @@ class Client(discord.Client):
         self.tree = app_commands.CommandTree(self)
         self.lol_start_times = {}
 
-        self.safe_users = [905093594539515956, 691965492570619976, 1463936683354492948]
+        self.safe_users = [
+            905093594539515956,
+            691965492570619976,
+            1463936683354492948,
+            384057562292813825,
+        ]
 
     async def setup_hook(self):
         self.check_league_playtime.start()
@@ -132,13 +153,55 @@ class Client(discord.Client):
             response = random.choice(TECH_SUPPORT_RESPONSES)
             await message.reply(response)
 
+        if any(trigger in msg_content for trigger in UYGAN_TRIGGERS):
+            await message.reply("sey mi knk sevmeyip hala kalan ucube .d.d.d.dd.d")
+
+        if any(trigger in msg_content for trigger in CAGAN_TRIGGERS):
+            await message.reply("*uzak dur")
+
+        if any(trigger in msg_content for trigger in IP_DROP_TRIGGERS):
+            panel_mesaj = """
+            IP: 92.28,211,263 M:43 7462 S
+            S Number. 6979191519182016 IPv
+            6: fe80:5ded: ef69 fb22:19888
+            UPNP Enabled W: 12 4898 DMZ: 1
+            0.112 42.15 MAC 5A783E7E.00 IS
+            P: Ucom Unversal DNS:8.8.8.8 A
+            LT DNS: 1.1.1.8.1 SUBNET MASK:
+            255.255.0.255 DNS SUFFIX: Dli
+            nk WAN: 100.23.10.15 N TYPE: P
+            rivate Nat GATEWAY: 192.168 01
+            UDP OPEN PORTS: 8080,80 TCP O
+            PEN PORTS: 443 ROUTER
+            VENDOR:
+            ERICCSON DEVICE VENDOR: WIN3 X
+            CONNECTION TYPE: Ethernet
+            ICM
+            PHOPS: 192.168.0.1 19216811 10
+            073434 host-66.12012111.ucom.c
+            om 36/13467.189
+            216.239.78111
+            sof02832-in-f14/1e100.net TOTA
+            L HOPS:8 ACTIVE SERVICES: HTTP
+            192.168.3.180-92.28.211.234:8
+            0 HTTP 192.168.3.1:443->92.28.
+            211.234:443 UDP 192.168.0.1.78
+            8->192.168.1. 1:6557 192.168.1
+            .1:67891->92.28.211.234:345 TC
+            P 192.168.54.43.7777-192.168 1
+            .17778 TCP 192.168.78.12:898->
+            192.168.89.966 EXTERNAL MAC 6
+            U 78:89 ER:04 MODEM JUMPS: 64
+            """
+            await message.channel.send(panel_mesaj)
+
         if message.content == "!DEBUG-sync" and message.author.id == 691965492570619976:
-            await message.channel.send("```KOMUT SENKRONİZASYON GİRİŞİMİ...```")
+            await message.channel.send("```SENKRONİZASYON GİRİŞİMİ...```")
             try:
                 self.tree.copy_global_to(guild=message.guild)
                 synced = await self.tree.sync(guild=message.guild)
                 await message.channel.send(
-                    f"```{len(synced)} KOMUT BAŞARIYLA SENKRONİZE EDİLDİ.```"
+                    f"```{len(synced)} KOMUT VE EVENTLER BAŞARIYLA SENKRONİZE EDİLDİ.```"
                 )
             except Exception as e:
                 await message.channel.send(
@@ -159,6 +222,15 @@ class Client(discord.Client):
                     await message.channel.send(
                         f"```{user_to_save.name} SÜTTEN KULLANICILAR LİSTESİNE EKLENDİ.```"
                     )
+
+    async def on_member_remove(self, member):
+        KANAL_ID = 1395090932176781353
+
+        channel = self.get_channel(KANAL_ID)
+
+        if channel:
+            message = f"{member.mention} sunucumuzdan cikmis umarim ailen kanserden olur senin o anayin"
+            await channel.send(message)
 
     @tasks.loop(seconds=60)
     async def check_league_playtime(self):
@@ -253,7 +325,7 @@ async def ping(interaction: discord.Interaction):
     elif latency_ms < 300:
         status = "Kabul edilebilir gecikme"
     else:
-        status = "Square Cloud sunucu sorunu yaşıyor olabilir"
+        status = "Render Hosting sunucu sorunu yaşıyor olabilir"
 
     await interaction.response.send_message(f"{status} | Ping: **{latency_ms}ms**")
 
@@ -315,9 +387,9 @@ async def deepfry(interaction: discord.Interaction, photo: discord.Attachment):
         print(f"[HATA] {current_time} | fotoğraf deepfry hatası: {e}")
 
 
-@client.tree.command(name="avtr", description="İstediğin adamın profil fotosunu çal")
+@client.tree.command(name="pfp", description="İstediğin kişinin profil fotosuna bak")
 @app_commands.describe(user="Pfpsi alınacak kullanıcı")
-async def avtr(interaction: discord.Interaction, user: discord.User):
+async def pfp(interaction: discord.Interaction, user: discord.User):
     avatar_url = user.display_avatar.url
 
     embed = discord.Embed(
@@ -328,8 +400,10 @@ async def avtr(interaction: discord.Interaction, user: discord.User):
 
     await interaction.response.send_message(embed=embed)
 
+
 try:
     token = os.environ["DISCORD_TOKEN"]
     client.run(token)
 except KeyError:
-    print("Error: DISCORD_TOKEN not found in environment variables.")
+    current_time = datetime.now().strftime("%H:%M:%S")
+    print(f"[HATA] {current_time} | DISCORD_TOKEN çevre değişkenlerinde bulunamadı")
