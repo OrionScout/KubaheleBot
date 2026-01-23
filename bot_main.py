@@ -155,6 +155,7 @@ class Client(discord.Client):
 
         if any(trigger in msg_content for trigger in UYGAN_TRIGGERS):
             await message.reply("sey mi knk sevmeyip hala kalan ucube .d.d.d.dd.d")
+            return
 
         if any(trigger in msg_content for trigger in CAGAN_TRIGGERS):
             await message.reply("*uzak dur")
