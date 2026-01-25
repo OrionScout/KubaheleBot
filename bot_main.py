@@ -122,7 +122,7 @@ class Client(discord.Client):
         self.lol_start_times = {}
 
         self.start_time = datetime.now()
-        self.log_history = deque(maxlen=5)
+        self.log_history = deque(maxlen=10)
 
         self.original_stdout = sys.stdout
         sys.stdout = self
@@ -459,16 +459,16 @@ async def durum(interaction: discord.Interaction):
 
     drembed.set_thumbnail(url=client.user.display_avatar.url)
     drembed.add_field(
-        name="Çalışma Süresi :stopwatch:", value=f"`{uptime_str}`", inline=True
+        name="Çalışma Süresi :stopwatch:", value=f"# `{uptime_str}`", inline=True
     )
-    drembed.add_field(name="Ping :signal_strength:", value=f"`{ping}ms`", inline=True)
+    drembed.add_field(name="Ping :signal_strength:", value=f"# `{ping}ms`", inline=True)
     drembed.add_field(
         name="Açılma Zamanı :rocket:",
-        value=f"<t:{int(client.start_time.timestamp())}:R>",
+        value=f"# <t:{int(client.start_time.timestamp())}:R>",
         inline=True,
     )
     drembed.add_field(
-        name="Son 5 Log Kaydı :scroll:",
+        name="Son 10 Log Kaydı :scroll:",
         value=f"```diff\n{recent_logs}\n```",
         inline=False,
     )
