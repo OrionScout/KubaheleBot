@@ -454,19 +454,16 @@ async def durum(interaction: discord.Interaction):
         recent_logs = "Henüz log mesajı yok."
 
     drembed = discord.Embed(
-        title="Sistem Durumu", color=discord.Color.green(), timestamp=datetime.now()
+        title="Sistem Durumu", color=discord.Color.green(), timestamp=datetime.now(),
+        description=f"""
+# :stopwatch: Çalışma Süresi: {uptime_str}
+# :signal_strength: Ping: {ping}ms
+# :rocket: Açılma Zamanı: <t:{int(client.start_time.timestamp())}:R>
+"""
     )
 
     drembed.set_thumbnail(url=client.user.display_avatar.url)
-    drembed.add_field(
-        name="Çalışma Süresi :stopwatch:", value=f"# `{uptime_str}`", inline=True
-    )
-    drembed.add_field(name="Ping :signal_strength:", value=f"# `{ping}ms`", inline=True)
-    drembed.add_field(
-        name="Açılma Zamanı :rocket:",
-        value=f"# <t:{int(client.start_time.timestamp())}:R>",
-        inline=True,
-    )
+    
     drembed.add_field(
         name="Son 10 Log Kaydı :scroll:",
         value=f"```diff\n{recent_logs}\n```",
