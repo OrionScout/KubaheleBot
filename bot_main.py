@@ -9,6 +9,8 @@ from PIL import Image, ImageEnhance, ImageDraw, ImageFont
 from PIL import ImageOps
 import os
 from keep_alive import keep_alive
+import sys
+from collections import deque
 
 keep_alive()
 
@@ -119,12 +121,28 @@ class Client(discord.Client):
         self.tree = app_commands.CommandTree(self)
         self.lol_start_times = {}
 
+        self.start_time = datetime.now()
+        self.log_history = deque(maxlen=5)
+
+        self.original_stdout = sys.stdout
+        sys.stdout = self
+
         self.safe_users = [
-            905093594539515956,
             691965492570619976,
             1463936683354492948,
             384057562292813825,
         ]
+
+    def write(self, text):
+        self.original_stdout.write(text)
+        self.original_stdout.flush()
+
+        if text.strip():
+            clean_text = text.strip()
+            self.log_history.append(f"{clean_text}")
+
+    def flush(self):
+        self.original_stdout.flush()
 
     async def setup_hook(self):
         self.check_league_playtime.start()
@@ -210,6 +228,16 @@ U 78:89 ER:04 MODEM JUMPS: 64
                 )
                 current_time = datetime.now().strftime("%H:%M:%S")
                 print(f"[HATA] {current_time} | {e}")
+
+        if (
+            message.content == "!DEBUG-logcheck"
+            and message.author.id == 691965492570619976
+        ):
+            current_time = datetime.now().strftime("%H:%M:%S")
+            print(f"[DEBUG] {current_time} | LOG TEST MESAJI")
+            await message.channel.send(
+                f"```LOG TEST MESAJI GÖNDERİLDİ, LÜTFEN KONTROL EDİNİZ.```"
+            )
 
         if (
             message.content.startswith("!DEBUG-safe ")
@@ -412,6 +440,40 @@ async def pfp(interaction: discord.Interaction, user: discord.User):
     embed.set_image(url=avatar_url)
 
     await interaction.response.send_message(embed=embed)
+
+
+@client.tree.command(name="durum", description="Botun durumu hakkında bilgiler")
+async def durum(interaction: discord.Interaction):
+    uptime = datetime.now() - client.start_time
+    uptime_str = str(uptime).split(".")[0]
+    ping = round(client.latency * 1000)
+
+    if client.log_history:
+        recent_logs = "\n".join(client.log_history)
+    else:
+        recent_logs = "Henüz log mesajı yok."
+
+    drembed = discord.Embed(
+        title="Sistem Durumu", color=discord.Color.green(), timestamp=datetime.now()
+    )
+
+    drembed.set_thumbnail(url=client.user.display_avatar.url)
+    drembed.add_field(
+        name="Çalışma Süresi :stopwatch:", value=f"`{uptime_str}`", inline=True
+    )
+    drembed.add_field(name="Ping :signal_strength:", value=f"`{ping}ms`", inline=True)
+    drembed.add_field(
+        name="Açılma Zamanı :rocket:",
+        value=f"<t:{int(client.start_time.timestamp())}:R>",
+        inline=True,
+    )
+    drembed.add_field(
+        name="Son 5 Log Kaydı :scroll:",
+        value=f"```diff\n{recent_logs}\n```",
+        inline=False,
+    )
+
+    await interaction.response.send_message(embed=drembed)
 
 
 try:
