@@ -131,7 +131,7 @@ class Client(discord.Client):
             691965492570619976,
             1463936683354492948,
             384057562292813825,
-            417264559645261826
+            417264559645261826,
         ]
 
     def write(self, text):
@@ -150,6 +150,9 @@ class Client(discord.Client):
         self.tree.copy_global_to(guild=MY_GUILD)
         current_time = datetime.now().strftime("%H:%M:%S")
         print(f"[INFO] {current_time} | LOG KAYDI BAŞLADI")
+        print(
+            f"[UYARI] {current_time} | bot sunucusu Greenwich saatiyle çalıştığı için bütün log kayıtları Türkiye saatinden 3 saat geri gözükecektir"
+        )
         print(f"[DCLIENT] {current_time} | komutlar sunucuya yüklendi")
 
     async def on_ready(self):
@@ -455,16 +458,18 @@ async def durum(interaction: discord.Interaction):
         recent_logs = "Henüz log mesajı yok."
 
     drembed = discord.Embed(
-        title="Sistem Durumu", color=discord.Color.green(), timestamp=datetime.now(),
+        title="Sistem Durumu",
+        color=discord.Color.green(),
+        timestamp=datetime.now(),
         description=f"""
 # :stopwatch: Çalışma Süresi: {uptime_str}
 # :signal_strength: Ping: {ping}ms
 # :rocket: Açılma Zamanı: <t:{int(client.start_time.timestamp())}:R>
-"""
+""",
     )
 
     drembed.set_thumbnail(url=client.user.display_avatar.url)
-    
+
     drembed.add_field(
         name="""
 Son Güncellemede Değişenler :memo:
@@ -474,9 +479,9 @@ Son Güncellemede Değişenler :memo:
 - Changelog eklendi. (Bu kısım)
 - Çalışma Süresi kısmındaki "days" kısmı Türkçeye çevrilerek "gün" yapıldı.
 - OE Kemal kalıcı olarak sütten kullanıcılar listesine eklendi.
-"""
+""",
     )
-    
+
     drembed.add_field(
         name="Son 10 Log Kaydı :scroll:",
         value=f"```diff\n{recent_logs}\n```",
