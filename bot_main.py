@@ -446,7 +446,7 @@ async def pfp(interaction: discord.Interaction, user: discord.User):
 @client.tree.command(name="durum", description="Botun durumu hakkında bilgiler")
 async def durum(interaction: discord.Interaction):
     uptime = datetime.now() - client.start_time
-    uptime_str = str(uptime).split(".")[0]
+    uptime_str = str(uptime).split(".")[0].replace("days", "gün").replace("day", "gün")
     ping = round(client.latency * 1000)
 
     if client.log_history:
@@ -464,6 +464,15 @@ async def durum(interaction: discord.Interaction):
     )
 
     drembed.set_thumbnail(url=client.user.display_avatar.url)
+    
+    drembed.add_field(
+        name="Son Güncellemede Değişenler :memo:",
+        value="""
+- Changelog eklendi. (Bu kısım)
+- Çalışma Süresi kısmındaki "days" kısmı Türkçeye çevrilerek "gün" yapıldı.
+- OE Kemal kalıcı olarak sütten kullanıcılar listesine eklendi.
+        """
+    )
     
     drembed.add_field(
         name="Son 10 Log Kaydı :scroll:",
