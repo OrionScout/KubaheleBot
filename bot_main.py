@@ -466,12 +466,15 @@ async def durum(interaction: discord.Interaction):
     drembed.set_thumbnail(url=client.user.display_avatar.url)
     
     drembed.add_field(
-        name="Son Güncellemede Değişenler :memo:",
+        name="""
+Son Güncellemede Değişenler :memo:
+(28.01.2026 | 16:18)
+""",
         value="""
 - Changelog eklendi. (Bu kısım)
 - Çalışma Süresi kısmındaki "days" kısmı Türkçeye çevrilerek "gün" yapıldı.
 - OE Kemal kalıcı olarak sütten kullanıcılar listesine eklendi.
-        """
+"""
     )
     
     drembed.add_field(
