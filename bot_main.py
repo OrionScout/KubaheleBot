@@ -482,9 +482,9 @@ Son Güncellemede Değişenler :memo:
 (28.01.2026 | 16:18)
 """,
         value="""
-- Changelog eklendi. (Bu kısım)
-- Çalışma Süresi kısmındaki "days" kısmı Türkçeye çevrilerek "gün" yapıldı.
-- OE Kemal kalıcı olarak sütten kullanıcılar listesine eklendi.
+- OE Efe kalıcı olarak sütten kullanıcılar listesine eklendi.
+- LoL takibini açıp kapamak için "/loltakibi" komutu eklendi. Admini
+olmadan kullanmaya çalışanlara karşı Ö N L E M alındı.
 """,
     )
 
