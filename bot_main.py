@@ -134,6 +134,8 @@ class Client(discord.Client):
             417264559645261826,
             540193259104894999
         ]
+        
+        self.tracking_enabled = True
 
     def write(self, text):
         self.original_stdout.write(text)
@@ -268,6 +270,9 @@ U 78:89 ER:04 MODEM JUMPS: 64
 
     @tasks.loop(seconds=60)
     async def check_league_playtime(self):
+        if not self.tracking_enabled:
+            return
+        
         if not hasattr(self, "tft_players"):
             self.tft_players = set()
 
@@ -490,6 +495,25 @@ Son Güncellemede Değişenler :memo:
     )
 
     await interaction.response.send_message(embed=drembed)
+
+@client.tree.command(name="tracking_switch", description="LoL banlama sistemini aç/kapa")
+@app_commands.describe(state="LoL takibini AÇ veya KAPA")
+@app_commands.choices(state=[
+    app_commands.Choice(name="AÇ", value="on"),
+    app_commands.Choice(name="KAPA", value="off")
+])
+async def tracking_switch(interaction: discord.Interaction, state: app_commands.Choice[str]):
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("you aint sneaky lil bro :v: :joy:", ephemeral=True)
+        return
+
+    if state.value == "on":
+        client.tracking_enabled = True
+        await interaction.response.send_message(":white_check_mark: LoL Takibi **AÇIK.**")
+    else:
+        client.tracking_enabled = False
+        client.lol_start_times.clear() 
+        await interaction.response.send_message(":x: LoL Takibi **KAPALI.** Ama hele bi açılsın...")
 
 
 try:
