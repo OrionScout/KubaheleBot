@@ -483,8 +483,7 @@ Son Güncellemede Değişenler :memo:
 """,
         value="""
 - OE Efe kalıcı olarak sütten kullanıcılar listesine eklendi.
-- LoL takibini açıp kapamak için "/loltakibi" komutu eklendi. Admini
-olmadan kullanmaya çalışanlara karşı Ö N L E M alındı.
+- LoL takibini açıp kapamak için "/loltakibi" komutu eklendi. Admini olmadan kullanmaya çalışanlara karşı Ö N L E M alındı.
 """,
     )
 
