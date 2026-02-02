@@ -479,7 +479,7 @@ async def durum(interaction: discord.Interaction):
     drembed.add_field(
         name="""
 Son Güncellemede Değişenler :memo:
-(28.01.2026 | 16:18)
+(3.02.2026 | 02:50)
 """,
         value="""
 - OE Efe kalıcı olarak sütten kullanıcılar listesine eklendi.
