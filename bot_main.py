@@ -26,7 +26,7 @@ IP_DROP_TRIGGERS = [
     "sen bittin olum",
     "sen bittin oğlum",
     "sen bittin oglum",
-    "sen bittin olm",
+    "sen bittin olm"
 ]
 
 TECH_SUPPORT_TRIGGERS = [
@@ -44,7 +44,7 @@ TECH_SUPPORT_TRIGGERS = [
     "lag giriyor",
     "fps drop",
     "fps düştü",
-    "fps düşüşü",
+    "fps düşüşü"
 ]
 
 TECH_SUPPORT_RESPONSES = [
@@ -54,7 +54,7 @@ TECH_SUPPORT_RESPONSES = [
     "ram indir knk",
     "kesin anakartı bozdun orosbucocu seni",
     "displayport tam takılı mı kanka",
-    "windowsa güncelleme geldiyse ondandır knks",
+    "windowsa güncelleme geldiyse ondandır knks"
 ]
 
 MY_GUILD = discord.Object(id=1064253407172493362)
@@ -132,6 +132,7 @@ class Client(discord.Client):
             1463936683354492948,
             384057562292813825,
             417264559645261826,
+            540193259104894999
         ]
 
     def write(self, text):
