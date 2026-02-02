@@ -496,7 +496,7 @@ Son Güncellemede Değişenler :memo:
 
     await interaction.response.send_message(embed=drembed)
 
-@client.tree.command(name="tracking_switch", description="LoL banlama sistemini aç/kapa")
+@client.tree.command(name="loltakibi", description="LoL banlama sistemini aç/kapa")
 @app_commands.describe(state="LoL takibini AÇ veya KAPA")
 @app_commands.choices(state=[
     app_commands.Choice(name="AÇ", value="on"),
