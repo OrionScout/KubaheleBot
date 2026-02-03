@@ -93,7 +93,7 @@ def create_vintage_photo_logic(image_data):
 
         draw = ImageDraw.Draw(img_contrasted)
         try:
-            font = ImageFont.truetype("arial.ttf", 24)
+            font = ImageFont.truetype("arial.ttf", 60)
         except IOError:
             font = ImageFont.load_default()
 
