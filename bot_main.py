@@ -555,7 +555,6 @@ async def uyan(interaction: discord.Interaction):
     client.is_awake = True
     
     await interaction.response.send_message("```AÇILIYOR...```")
-    await interaction.response.defer()
     
     try:
         current_time = datetime.now().strftime("%H:%M:%S")
@@ -567,8 +566,8 @@ async def uyan(interaction: discord.Interaction):
         await interaction.followup.send(f"```AÇILIŞ SENKRONİZASYONU BAŞARISIZ.```")
         print(f"[HATA] {current_time} | {e}")
     
-    await interaction.followup.send("```BOT AÇIK. DURUMU GÖRMEK İÇİN: /durum```")
     await client.change_presence(status=discord.Status.online, activity=discord.Game(name="League of Legends"))
+    await interaction.followup.send("```BOT AÇIK. DURUMU GÖRMEK İÇİN: /durum```")
 
 
 try:
