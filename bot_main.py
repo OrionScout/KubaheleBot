@@ -558,10 +558,10 @@ async def uyu(interaction: discord.Interaction):
         )
         return
 
-    client.is_awake = False
-
-    await client.change_presence(status=discord.Status.invisible)
-    await interaction.response.send_message("```KAPANIYOR...```")
+    else:
+        client.is_awake = False
+        await client.change_presence(status=discord.Status.invisible)
+        await interaction.response.send_message("```KAPANIYOR...```")
 
 @client.tree.command(name="açıl", description="Botu uyandır")
 async def uyan(interaction: discord.Interaction):
@@ -571,17 +571,6 @@ async def uyan(interaction: discord.Interaction):
     client.is_awake = True
     
     await interaction.response.send_message("```AÇILIYOR...```")
-    
-    try:
-        current_time = datetime.now().strftime("%H:%M:%S")
-        synced = await client.tree.sync()
-        await interaction.followup.send(f"```{len(synced)} KOMUT VE EVENTLER BAŞARIYLA SENKRONİZE EDİLDİ.```")
-        print(f"[INFO] {current_time} | komutlar ve eventler /uyan komutu ile senkronize edildi")
-
-    except Exception as e:
-        await interaction.followup.send(f"```AÇILIŞ SENKRONİZASYONU BAŞARISIZ.```")
-        print(f"[HATA] {current_time} | {e}")
-    
     await client.change_presence(status=discord.Status.online, activity=discord.Game(name="League of Legends"))
     await interaction.followup.send("```BOT AÇIK. DURUMU GÖRMEK İÇİN: /durum```")
 
