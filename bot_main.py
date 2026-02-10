@@ -172,6 +172,9 @@ class Client(discord.Client):
             )
 
     async def on_message(self, message):
+        if not self.is_awake:
+            return
+        
         if message.author == self.user:
             return
 
@@ -270,6 +273,15 @@ U 78:89 ER:04 MODEM JUMPS: 64
         if channel:
             message = f"{member.mention} sunucumuzdan cikmis umarim ailen kanserden olur senin o anayin"
             await channel.send(message)
+            
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.command.name == "açıl":
+            return True
+        
+        if not self.is_awake:
+            return False
+        
+        return True
 
     @tasks.loop(seconds=60)
     async def check_league_playtime(self):
