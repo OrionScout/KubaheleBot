@@ -164,11 +164,12 @@ class Client(discord.Client):
         current_time = datetime.now().strftime("%H:%M:%S")
         print(f"[DCLIENT] {current_time} | {self.user} olarak giriş yapıldı")
 
-        await self.change_presence(
-            activity=discord.Activity(
-                type=discord.ActivityType.playing, name="League of Legends"
+        if self.is_awake:
+            await self.change_presence(
+                activity=discord.Activity(
+                    type=discord.ActivityType.playing, name="League of Legends"
+                )
             )
-        )
 
     async def on_message(self, message):
         if message.author == self.user:
@@ -273,6 +274,9 @@ U 78:89 ER:04 MODEM JUMPS: 64
     @tasks.loop(seconds=60)
     async def check_league_playtime(self):
         if not self.tracking_enabled:
+            return
+        
+        if not self.is_awake:
             return
 
         if not hasattr(self, "tft_players"):
