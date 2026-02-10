@@ -26,7 +26,7 @@ IP_DROP_TRIGGERS = [
     "sen bittin olum",
     "sen bittin oğlum",
     "sen bittin oglum",
-    "sen bittin olm"
+    "sen bittin olm",
 ]
 
 TECH_SUPPORT_TRIGGERS = [
@@ -44,7 +44,7 @@ TECH_SUPPORT_TRIGGERS = [
     "lag giriyor",
     "fps drop",
     "fps düştü",
-    "fps düşüşü"
+    "fps düşüşü",
 ]
 
 TECH_SUPPORT_RESPONSES = [
@@ -54,7 +54,7 @@ TECH_SUPPORT_RESPONSES = [
     "ram indir knk",
     "kesin anakartı bozdun orosbucocu seni",
     "displayport tam takılı mı kanka",
-    "windowsa güncelleme geldiyse ondandır knks"
+    "windowsa güncelleme geldiyse ondandır knks",
 ]
 
 MY_GUILD = discord.Object(id=1064253407172493362)
@@ -127,14 +127,16 @@ class Client(discord.Client):
         self.original_stdout = sys.stdout
         sys.stdout = self
 
+        self.is_awake = True
+
         self.safe_users = [
             691965492570619976,
             1463936683354492948,
             384057562292813825,
             417264559645261826,
-            540193259104894999
+            540193259104894999,
         ]
-        
+
         self.tracking_enabled = False
 
     def write(self, text):
@@ -272,7 +274,7 @@ U 78:89 ER:04 MODEM JUMPS: 64
     async def check_league_playtime(self):
         if not self.tracking_enabled:
             return
-        
+
         if not hasattr(self, "tft_players"):
             self.tft_players = set()
 
@@ -462,7 +464,7 @@ async def durum(interaction: discord.Interaction):
         recent_logs = "\n".join(client.log_history)
     else:
         recent_logs = "Henüz log mesajı yok."
-    
+
     if client.tracking_enabled:
         takip_durumu = ":red_circle: **AKTİF**"
     else:
@@ -487,7 +489,9 @@ Son Güncellemede Değişenler :memo:
 (10.02.2026 | 18:19)
 """,
         value="""
-EMERGENCY FIX
+- Hosting kaynaklı LoL takip "amnezi"si düzeltildi.
+- /kapan ve /açıl komutları eklendi.
+- Bota frontal lob lobotomisi uygulandı. (Grok moment)
 """,
     )
 
@@ -499,24 +503,72 @@ EMERGENCY FIX
 
     await interaction.response.send_message(embed=drembed)
 
+
 @client.tree.command(name="loltakibi", description="LoL banlama sistemini aç/kapa")
 @app_commands.describe(state="LoL takibini AÇ veya KAPA")
-@app_commands.choices(state=[
-    app_commands.Choice(name="AÇ", value="on"),
-    app_commands.Choice(name="KAPA", value="off")
-])
-async def tracking_switch(interaction: discord.Interaction, state: app_commands.Choice[str]):
+@app_commands.choices(
+    state=[
+        app_commands.Choice(name="AÇ", value="on"),
+        app_commands.Choice(name="KAPA", value="off"),
+    ]
+)
+async def tracking_switch(
+    interaction: discord.Interaction, state: app_commands.Choice[str]
+):
     if not interaction.user.guild_permissions.administrator:
-        await interaction.response.send_message("you aint sneaky lil bro :v: :joy:", ephemeral=True)
+        await interaction.response.send_message(
+            "you aint sneaky lil bro :v: :joy:", ephemeral=True
+        )
         return
 
     if state.value == "on":
         client.tracking_enabled = True
-        await interaction.response.send_message(":white_check_mark: LoL Takibi **AÇIK.**")
+        await interaction.response.send_message(
+            ":white_check_mark: LoL Takibi **AÇIK.**"
+        )
     else:
         client.tracking_enabled = False
-        client.lol_start_times.clear() 
-        await interaction.response.send_message(":x: LoL Takibi **KAPALI.** Ama hele bi açılsın...")
+        client.lol_start_times.clear()
+        await interaction.response.send_message(
+            ":x: LoL Takibi **KAPALI.** Ama hele bi açılsın..."
+        )
+
+
+@client.tree.command(name="kapan", description="Botu komaya sok")
+async def uyu(interaction: discord.Interaction):
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message(
+            "Gerekli izin(ler) eksik: Yönetici", ephemeral=True
+        )
+        return
+
+    client.is_awake = False
+
+    await client.change_presence(status=discord.Status.invisible)
+    await interaction.response.send_message("```KAPANIYOR...```")
+
+@client.tree.command(name="açıl", description="Botu uyandır")
+async def uyan(interaction: discord.Interaction):
+    if not interaction.user.guild_permissions.administrator:
+        return
+
+    client.is_awake = True
+    
+    await interaction.response.send_message("```AÇILIYOR...```")
+    await interaction.response.defer()
+    
+    try:
+        current_time = datetime.now().strftime("%H:%M:%S")
+        synced = await client.tree.sync()
+        await interaction.followup.send(f"```{len(synced)} KOMUT VE EVENTLER BAŞARIYLA SENKRONİZE EDİLDİ.```")
+        print(f"[INFO] {current_time} | komutlar ve eventler /uyan komutu ile senkronize edildi")
+
+    except Exception as e:
+        await interaction.followup.send(f"```AÇILIŞ SENKRONİZASYONU BAŞARISIZ.```")
+        print(f"[HATA] {current_time} | {e}")
+    
+    await interaction.followup.send("```BOT AÇIK. DURUMU GÖRMEK İÇİN: /durum```")
+    await client.change_presence(status=discord.Status.online, activity=discord.Game(name="League of Legends"))
 
 
 try:
