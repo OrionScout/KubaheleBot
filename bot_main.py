@@ -486,7 +486,7 @@ async def durum(interaction: discord.Interaction):
     drembed.add_field(
         name="""
 Son Güncellemede Değişenler :memo:
-(10.02.2026 | 18:19)
+(10.02.2026 | 19:08)
 """,
         value="""
 - Hosting kaynaklı LoL takip "amnezi"si düzeltildi.
