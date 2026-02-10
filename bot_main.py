@@ -135,7 +135,7 @@ class Client(discord.Client):
             540193259104894999
         ]
         
-        self.tracking_enabled = True
+        self.tracking_enabled = False
 
     def write(self, text):
         self.original_stdout.write(text)
@@ -462,6 +462,11 @@ async def durum(interaction: discord.Interaction):
         recent_logs = "\n".join(client.log_history)
     else:
         recent_logs = "Henüz log mesajı yok."
+    
+    if client.tracking_enabled:
+        takip_durumu = ":red_circle: **AKTİF**"
+    else:
+        takip_durumu = ":green_circle: **KAPALI**"
 
     drembed = discord.Embed(
         title="Sistem Durumu",
@@ -469,8 +474,8 @@ async def durum(interaction: discord.Interaction):
         timestamp=datetime.now(),
         description=f"""
 # :stopwatch: Çalışma Süresi: {uptime_str}
+# :shield: LoL Takibi: {takip_durumu}
 # :signal_strength: Ping: {ping}ms
-# :rocket: Açılma Zamanı: <t:{int(client.start_time.timestamp())}:R>
 """,
     )
 
@@ -479,11 +484,10 @@ async def durum(interaction: discord.Interaction):
     drembed.add_field(
         name="""
 Son Güncellemede Değişenler :memo:
-(3.02.2026 | 02:50)
+(10.02.2026 | 18:19)
 """,
         value="""
-- OE Efe kalıcı olarak sütten kullanıcılar listesine eklendi.
-- LoL takibini açıp kapamak için "/loltakibi" komutu eklendi. Admini olmadan kullanmaya çalışanlara karşı Ö N L E M alındı.
+EMERGENCY FIX
 """,
     )
 
