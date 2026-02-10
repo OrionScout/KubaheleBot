@@ -119,6 +119,7 @@ class Client(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.tree = app_commands.CommandTree(self)
+        self.tree.interaction_check = self.interaction_check
         self.lol_start_times = {}
 
         self.start_time = datetime.now()
