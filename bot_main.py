@@ -159,11 +159,22 @@ class Client(discord.Client):
         print(
             f"[UYARI] {current_time} | bot sunucusu Greenwich saatiyle çalıştığı için bütün log kayıtları Türkiye saatinden 3 saat geri gözükecektir"
         )
-        print(f"[DCLIENT] {current_time} | komutlar sunucuya yüklendi")
 
     async def on_ready(self):
         current_time = datetime.now().strftime("%H:%M:%S")
         print(f"[DCLIENT] {current_time} | {self.user} olarak giriş yapıldı")
+        print(f"[INFO] {current_time} | global komutlar temizleniyor...")
+        self.tree.clear_commands(guild=None)
+        await self.tree.sync(guild=None)
+        print(
+            f"[INFO] {current_time} | global komutlar temizlendi, guild komutları senkronize ediliyor..."
+        )
+        MY_GUILD_ID = discord.Object(id=1064253407172493362)
+        self.tree.copy_global_to(guild=MY_GUILD_ID)
+        await self.tree.sync(guild=MY_GUILD_ID)
+        print(
+            f"[INFO] {current_time} | guild id 1064253407172493362 için komutlar senkronize edildi."
+        )
 
         if self.is_awake:
             await self.change_presence(
@@ -175,7 +186,7 @@ class Client(discord.Client):
     async def on_message(self, message):
         if not self.is_awake:
             return
-        
+
         if message.author == self.user:
             return
 
@@ -228,7 +239,7 @@ U 78:89 ER:04 MODEM JUMPS: 64
             """
             await message.channel.send(panel_mesaj)
 
-        if message.content == "!DEBUG-sync" and message.author.id == 691965492570619976:
+        if message.content == "!DEBUG-sync":
             await message.channel.send("```SENKRONİZASYON GİRİŞİMİ...```")
             try:
                 self.tree.copy_global_to(guild=message.guild)
@@ -243,10 +254,7 @@ U 78:89 ER:04 MODEM JUMPS: 64
                 current_time = datetime.now().strftime("%H:%M:%S")
                 print(f"[HATA] {current_time} | {e}")
 
-        if (
-            message.content == "!DEBUG-logcheck"
-            and message.author.id == 691965492570619976
-        ):
+        if message.content == "!DEBUG-logcheck":
             current_time = datetime.now().strftime("%H:%M:%S")
             print(f"[DEBUG] {current_time} | LOG TEST MESAJI")
             await message.channel.send(
@@ -274,21 +282,21 @@ U 78:89 ER:04 MODEM JUMPS: 64
         if channel:
             message = f"{member.mention} sunucumuzdan cikmis umarim ailen kanserden olur senin o anayin"
             await channel.send(message)
-            
+
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.command.name == "açıl":
             return True
-        
+
         if not self.is_awake:
             return False
-        
+
         return True
 
     @tasks.loop(seconds=60)
     async def check_league_playtime(self):
         if not self.tracking_enabled:
             return
-        
+
         if not self.is_awake:
             return
 
@@ -564,15 +572,18 @@ async def uyu(interaction: discord.Interaction):
         await client.change_presence(status=discord.Status.invisible)
         await interaction.response.send_message("```KAPANIYOR...```")
 
+
 @client.tree.command(name="açıl", description="Botu uyandır")
 async def uyan(interaction: discord.Interaction):
     if not interaction.user.guild_permissions.administrator:
         return
 
     client.is_awake = True
-    
+
     await interaction.response.send_message("```AÇILIYOR...```")
-    await client.change_presence(status=discord.Status.online, activity=discord.Game(name="League of Legends"))
+    await client.change_presence(
+        status=discord.Status.online, activity=discord.Game(name="League of Legends")
+    )
     await interaction.followup.send("```BOT AÇIK. DURUMU GÖRMEK İÇİN: /durum```")
 
 
