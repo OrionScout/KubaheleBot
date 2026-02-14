@@ -511,12 +511,10 @@ async def durum(interaction: discord.Interaction):
     drembed.add_field(
         name="""
 Son Güncellemede Değişenler :memo:
-(10.02.2026 | 19:08)
+(15.02.2026 | 00:50)
 """,
         value="""
-- Hosting kaynaklı LoL takip "amnezi"si düzeltildi.
-- /kapan ve /açıl komutları eklendi.
-- Bota frontal lob lobotomisi uygulandı. (Grok moment)
+- Kopya komut hatası düzeltildi. (lobotomi)
 """,
     )
 
