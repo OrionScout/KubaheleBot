@@ -661,9 +661,7 @@ async def uyan(interaction: discord.Interaction):
     await interaction.followup.send("```BOT AÇIK. DURUMU GÖRMEK İÇİN: /durum```")
 
 
-@client.tree.context_menu(
-    name="alıntı", description="Cevap verdiğin kişinin mesajını alıntı yap"
-)
+@client.tree.context_menu(name="alıntı")
 async def alinti_komutu(interaction: discord.Interaction, message: discord.Message):
     if not message.content:
         await interaction.response.send_message("Mesajda yazı yok aw", ephemeral=True)
