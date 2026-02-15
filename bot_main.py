@@ -590,8 +590,7 @@ Son Güncellemede Değişenler :memo:
 """,
         value="""
 - Travma Sonrası Stres Bozukluğu (PTSD) teşhisi konuldu.
-- Herhangi bir mesaj üzerine sağ tıklayıp, "uygulamalar" kısmındaki
-"Alıntı Yap"a tıklayarak alıntı yapma özelliği eklendi.
+- Herhangi bir mesaj üzerine sağ tıklayıp, "uygulamalar" kısmındaki "Alıntı Yap"a tıklayarak alıntı yapma özelliği eklendi.
 """,
     )
 
