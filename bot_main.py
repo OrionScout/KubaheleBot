@@ -5,9 +5,10 @@ from datetime import datetime, timedelta
 import random
 import io
 import aiohttp
-from PIL import Image, ImageEnhance, ImageDraw, ImageFont
+from PIL import Image, ImageEnhance, ImageDraw, ImageFont, ImageFilter
 from PIL import ImageOps
 import os
+import textwrap
 from keep_alive import keep_alive
 import sys
 from collections import deque
@@ -17,6 +18,8 @@ keep_alive()
 UYGAN_TRIGGERS = ["cagan uygan", "cağan uygan", "çagan uygan", "çağan uygan"]
 
 CAGAN_TRIGGERS = ["cagan", "cağan", "çagan", "çağan"]
+
+FLASHBACK_TRIGGERS = ["lobotomi", "lobotomy", "prefrontal", "frontal"]
 
 IP_DROP_TRIGGERS = [
     "bittin olum sen",
@@ -203,6 +206,11 @@ class Client(discord.Client):
         if any(trigger in msg_content for trigger in CAGAN_TRIGGERS):
             await message.reply("*uzak dur")
 
+        if any(trigger in msg_content for trigger in FLASHBACK_TRIGGERS):
+            await message.reply(
+                "https://tenor.com/view/war-vietnam-ptsd-shell-shock-moment-gif-3022747568394546158"
+            )
+
         if any(trigger in msg_content for trigger in IP_DROP_TRIGGERS):
             panel_mesaj = """
 IP: 92.28,211,263 M:43 7462 S
@@ -383,6 +391,73 @@ U 78:89 ER:04 MODEM JUMPS: 64
                         del self.lol_start_times[user_id]
 
 
+async def alinti_yap(message_content, author_name, author_username, avatar_url):
+    CANVAS_WIDTH = 800
+    CANVAS_HEIGHT = 400
+    BG_COLOR = "black"
+    TEXT_COLOR = "white"
+    FONT_SIZE_QUOTE = 40
+    FONT_SIZE_AUTHOR = 20
+    AVATAR_SIZE = 400
+
+    canvas = Image.new("RGB", (CANVAS_WIDTH, CANVAS_HEIGHT), BG_COLOR)
+    draw = ImageDraw.Draw(canvas)
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(avatar_url) as response:
+            avatar_bytes = await response.read()
+
+    with Image.open(io.BytesIO(avatar_bytes)) as avatar_img:
+        avatar_img = avatar_img.convert("L")
+        avatar_img = avatar_img.resize((AVATAR_SIZE, AVATAR_SIZE))
+
+        mask = Image.new("L", (AVATAR_SIZE, AVATAR_SIZE), 0)
+        mask_draw = ImageDraw.Draw(mask)
+        for x in range(AVATAR_SIZE):
+            alpha = int(255 * (1 - (x / AVATAR_SIZE)))
+            mask_draw.line([(x, 0), (x, AVATAR_SIZE)], fill=alpha)
+
+        avatar_img.putalpha(mask)
+
+        canvas.paste(avatar_img, (0, 0), avatar_img)
+
+    try:
+        font_quote = ImageFont.truetype("DejaVuSerif.ttf", FONT_SIZE_QUOTE)
+        font_author = ImageFont.truetype("DejaVuSerif-Italic.ttf", FONT_SIZE_AUTHOR)
+    except IOError:
+        font_quote = ImageFont.load_default()
+        font_author = ImageFont.load_default()
+
+    text_area_width = CANVAS_WIDTH - AVATAR_SIZE - 40
+    chars_per_line = int(text_area_width / (FONT_SIZE_QUOTE / 2))
+    wrapped_text = textwrap.fill(message_content, width=chars_per_line)
+
+    text_x = AVATAR_SIZE + 20
+    text_y = 100
+    draw.multiline_text(
+        (text_x, text_y), wrapped_text, fill=TEXT_COLOR, font=font_quote, align="left"
+    )
+
+    author_text = f"- {author_name} @{author_username}"
+    author_x = CANVAS_WIDTH - 40
+    author_y = CANVAS_HEIGHT - 40
+    bbox = draw.textbbox((0, 0), author_text, font=font_author)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
+    draw.text(
+        (author_x - text_width, author_y - text_height),
+        author_text,
+        fill=TEXT_COLOR,
+        font=font_author,
+    )
+
+    buffer = io.BytesIO()
+    canvas.save(buffer, format="PNG")
+    buffer.seek(0)
+
+    return discord.File(buffer, filename="alinti.png")
+
+
 # SLASH KOMUTLAR BAŞLIYOR
 
 
@@ -511,10 +586,11 @@ async def durum(interaction: discord.Interaction):
     drembed.add_field(
         name="""
 Son Güncellemede Değişenler :memo:
-(15.02.2026 | 00:50)
+(16.02.2026 | 01:09)
 """,
         value="""
-- Kopya komut hatası düzeltildi. (lobotomi)
+- Travma Sonrası Stres Bozukluğu (PTSD) teşhisi konuldu.
+- /alıntı komutu ile kullanıcıların mesajına cevap vererek "alıntı" yapma özelliği eklendi.
 """,
     )
 
@@ -583,6 +659,35 @@ async def uyan(interaction: discord.Interaction):
         status=discord.Status.online, activity=discord.Game(name="League of Legends")
     )
     await interaction.followup.send("```BOT AÇIK. DURUMU GÖRMEK İÇİN: /durum```")
+
+
+@client.tree.context_menu(
+    name="alıntı", description="Cevap verdiğin kişinin mesajını alıntı yap"
+)
+async def alinti_komutu(interaction: discord.Interaction, message: discord.Message):
+    if not message.content:
+        await interaction.response.send_message("Mesajda yazı yok aw", ephemeral=True)
+        return
+
+    await interaction.response.defer()
+
+    try:
+        content = message.content
+        author = message.author
+        author_name = author.display_name
+        author_username = author.name
+        avatar_url = author.display_avatar.url
+
+        quote_file = await alinti_yap(content, author_name, author_username, avatar_url)
+
+        await interaction.followup.send(file=quote_file)
+
+    except Exception as e:
+        await interaction.followup.send(
+            "Bi hata çıktı hocam erroru konsola gönderdim, Eren'e danış istersen"
+        )
+        current_time = datetime.now().strftime("%H:%M:%S")
+        print(f"[HATA] {current_time} | alıntı yapma hatası: {e}")
 
 
 try:
