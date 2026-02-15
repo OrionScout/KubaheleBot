@@ -428,27 +428,26 @@ async def alinti_yap(message_content, author_name, author_username, avatar_url):
         font_quote = ImageFont.load_default()
         font_author = ImageFont.load_default()
 
-    text_area_width = CANVAS_WIDTH - AVATAR_SIZE - 40
-    chars_per_line = int(text_area_width / (FONT_SIZE_QUOTE / 2))
+    text_area_width = CANVAS_WIDTH - AVATAR_SIZE
+    chars_per_line = int((text_area_width - 40) / (FONT_SIZE_QUOTE / 2))
     wrapped_text = textwrap.fill(message_content, width=chars_per_line)
 
-    text_x = AVATAR_SIZE + 20
-    text_y = 100
+    text_x = AVATAR_SIZE + (text_area_width / 2)
+    text_y = CANVAS_HEIGHT / 2
     draw.multiline_text(
-        (text_x, text_y), wrapped_text, fill=TEXT_COLOR, font=font_quote, align="left"
+        (text_x, text_y), wrapped_text, fill=TEXT_COLOR, font=font_quote, align="center", anchor="mm"
     )
 
     author_text = f"- {author_name} @{author_username}"
-    author_x = CANVAS_WIDTH - 40
-    author_y = CANVAS_HEIGHT - 40
-    bbox = draw.textbbox((0, 0), author_text, font=font_author)
-    text_width = bbox[2] - bbox[0]
-    text_height = bbox[3] - bbox[1]
+    author_x = text_x
+    author_y = CANVAS_HEIGHT - 30
     draw.text(
-        (author_x - text_width, author_y - text_height),
+        (author_x, author_y),
         author_text,
         fill=TEXT_COLOR,
         font=font_author,
+        align="center",
+        anchor="ms"
     )
 
     buffer = io.BytesIO()
