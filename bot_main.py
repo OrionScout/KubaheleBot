@@ -590,7 +590,7 @@ Son Güncellemede Değişenler :memo:
 """,
         value="""
 - Travma Sonrası Stres Bozukluğu (PTSD) teşhisi konuldu.
-- /alıntı komutu ile kullanıcıların mesajına cevap vererek "alıntı" yapma özelliği eklendi.
+- /alinti komutu ile kullanıcıların mesajına cevap vererek "alıntı" yapma özelliği eklendi.
 """,
     )
 
@@ -661,7 +661,7 @@ async def uyan(interaction: discord.Interaction):
     await interaction.followup.send("```BOT AÇIK. DURUMU GÖRMEK İÇİN: /durum```")
 
 
-@client.tree.context_menu(name="alıntı")
+@client.tree.context_menu(name="alinti")
 async def alinti_komutu(interaction: discord.Interaction, message: discord.Message):
     if not message.content:
         await interaction.response.send_message("Mesajda yazı yok aw", ephemeral=True)
