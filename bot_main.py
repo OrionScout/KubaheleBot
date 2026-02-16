@@ -429,7 +429,8 @@ async def alinti_yap(message_content, author_name, author_username, avatar_url):
         font_author = ImageFont.load_default()
 
     text_area_width = CANVAS_WIDTH - AVATAR_SIZE
-    chars_per_line = int((text_area_width - 40) / (FONT_SIZE_QUOTE / 2))
+    avg_char_width = FONT_SIZE_QUOTE * 0.6
+    chars_per_line = int((text_area_width - 40) / avg_char_width)
     wrapped_text = textwrap.fill(message_content, width=chars_per_line)
 
     text_x = AVATAR_SIZE + (text_area_width / 2)
