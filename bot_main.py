@@ -120,6 +120,10 @@ def create_vintage_photo_logic(image_data):
 
 class Client(discord.Client):
     def __init__(self, *args, **kwargs):
+        intents = discord.Intents.default()
+        intents.members = True
+        intents.presences = True
+        
         super().__init__(*args, **kwargs)
         self.tree = app_commands.CommandTree(self)
         self.tree.interaction_check = self.interaction_check
@@ -138,7 +142,7 @@ class Client(discord.Client):
             1463936683354492948,
             384057562292813825,
             417264559645261826,
-            540193259104894999,
+            540193259104894999
         ]
 
         self.tracking_enabled = False
@@ -178,13 +182,6 @@ class Client(discord.Client):
         print(
             f"[INFO] {current_time} | guild id 1064253407172493362 için komutlar senkronize edildi."
         )
-
-        if self.is_awake:
-            await self.change_presence(
-                activity=discord.Activity(
-                    type=discord.ActivityType.playing, name="League of Legends"
-                )
-            )
 
     async def on_message(self, message):
         if not self.is_awake:
@@ -299,6 +296,29 @@ U 78:89 ER:04 MODEM JUMPS: 64
             return False
 
         return True
+    
+    async def on_member_join(self, member):
+        TARGET_USER_ID = 421721851451146250
+        TUNA_ID = 384057562292813825
+        
+        if member.id == TARGET_USER_ID:
+            try:
+                await member.ban(reason="İSTENMEYEN KULLANICI")
+                current_time = datetime.now().strftime("%H:%M:%S")
+                print(f"[GUVENLIK] {current_time} | ONUR UCUZ SUNUCUYA GİRMEYE ÇALIŞTI VE ANINDA PULVERİZE EDİLDİ.")
+                
+                tuna = await self.fetch_user(TUNA_ID)
+                if tuna:
+                    await tuna.send(
+                        f"**EMNİYET RAPORU:** Hedef Onur Ucuz (`{member.name}`) sunucuya sızmaya çalıştı. Şahıs anında uzaklaştırıldı."
+                    )
+                    
+            except discord.Forbidden:
+                print(f"[HATA] {current_time} | banlama yetkisi yok")
+            except discord.HTTPException:
+                print(f"[HATA] {current_time} | Onur Ucuz banlandı, ancak Tuna'nın DMleri kapalı. Loglarda bunu görüyorsanız, durumu Tuna'ya bildirin.")
+            except Exception as e:
+                print(f"[HATA] {current_time} | {e}")
 
     @tasks.loop(seconds=60)
     async def check_league_playtime(self):
@@ -307,6 +327,19 @@ U 78:89 ER:04 MODEM JUMPS: 64
 
         if not self.is_awake:
             return
+        
+        onlCnt = 0
+        for guild in self.guilds:
+            for member in guild.members:
+                if member.status != discord.Status.offline and not member.bot:
+                    onlCnt += 1
+        
+        activity = discord.Activity(
+            type=discord.ActivityType.watching,
+            name=f"{onlCnt} kişi çevrimiçi"
+        )
+        
+        await self.change_presence(status=discord.Status.online, activity=activity)
 
         if not hasattr(self, "tft_players"):
             self.tft_players = set()
@@ -375,7 +408,7 @@ U 78:89 ER:04 MODEM JUMPS: 64
                                 await member.send(
                                     f"{limit} dakikadan uzun süre LoL oynadığın için ban yedin."
                                 )
-                                await guild.ban(member, reason="LoL Limit Exceeded")
+                                await guild.ban(member, reason="LoL Limiti Geçildi")
                                 print(
                                     f"[MODERASYON] {current_time} | {member.name} BANLANDI"
                                 )
@@ -473,12 +506,12 @@ client = Client(intents=intents)
 async def ping(interaction: discord.Interaction):
     latency_ms = round(client.latency * 1000)
 
-    if latency_ms < 100:
+    if latency_ms < 40:
         status = "Önemsiz seviyede gecikme"
-    elif latency_ms < 300:
+    elif latency_ms < 90:
         status = "Kabul edilebilir gecikme"
     else:
-        status = "Render Hosting sunucu sorunu yaşıyor olabilir"
+        status = "Render Hosting sorun yaşıyor olabilir."
 
     await interaction.response.send_message(f"{status} | Ping: **{latency_ms}ms**")
 
@@ -586,11 +619,12 @@ async def durum(interaction: discord.Interaction):
     drembed.add_field(
         name="""
 Son Güncellemede Değişenler :memo:
-(16.02.2026 | 01:09)
+(02.03.2026 | 20:06)
 """,
         value="""
-- Travma Sonrası Stres Bozukluğu (PTSD) teşhisi konuldu.
-- Herhangi bir mesaj üzerine sağ tıklayıp, "uygulamalar" kısmındaki "Alıntı Yap"a tıklayarak alıntı yapma özelliği eklendi.
+- Bot artık durumunda kaç kullanıcının çevrimiçi olduğunu gösterecek.
+- Ping mesajı yeni gecikme standardına göre güncellendi.
+- ██████ ████ ████ adlı şahıs sunucuya katılmaya çalışırsa, şahsa ██████ █████████ uygulanacak, ardından gerekli ███ ███████ ███ █████ ve ████████ işlemlerinden sonra yüce liderimiz Tuna durumdan haberdar edilecektir.
 """,
     )
 
@@ -656,8 +690,7 @@ async def uyan(interaction: discord.Interaction):
 
     await interaction.response.send_message("```AÇILIYOR...```")
     await client.change_presence(
-        status=discord.Status.online, activity=discord.Game(name="League of Legends")
-    )
+        status=discord.Status.online)
     await interaction.followup.send("```BOT AÇIK. DURUMU GÖRMEK İÇİN: /durum```")
 
 
