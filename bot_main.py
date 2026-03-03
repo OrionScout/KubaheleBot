@@ -162,7 +162,7 @@ class Client(discord.Client):
         self.check_league_playtime.start()
         self.tree.copy_global_to(guild=MY_GUILD)
         current_time = datetime.now().strftime("%H:%M:%S")
-        print(f"[INFO] {current_time} | LOG KAYDI BAŞLADI - LOBOTOMİ İŞLEMDE")
+        print(f"[INFO] {current_time} | LOG KAYDI BAŞLADI")
         print(
             f"[UYARI] {current_time} | bot sunucusu Greenwich saatiyle çalıştığı için bütün log kayıtları Türkiye saatinden 3 saat geri gözükecektir"
         )
@@ -322,18 +322,12 @@ U 78:89 ER:04 MODEM JUMPS: 64
     
     @tasks.loop(seconds=60)
     async def check_league_playtime(self):
-        print("[LOBOTOMİ INFO] | ANA DÖNGÜ TETİKLENDİ...", flush=True)
-        
         try:
             if not self.is_ready():
-                print("[LOBOTOMİ INFO] | DISCORD BAĞLANTISI SAĞLAMA ALINMADI, BEKLENİLİYOR...", flush=True)
                 return
             
             if not self.is_awake:
-                print("[LOBOTOMİ INFO] | KOMA DURUMU TESPİT EDİLDİ, DÖNGÜ DURDURULUYOR...", flush=True)
                 return
-            
-            print("[LOBOTOMİ INFO] | KULLANICILAR SAYILIYOR...", flush=True)
             
             onlCnt = 0
             for guild in self.guilds:
@@ -347,10 +341,8 @@ U 78:89 ER:04 MODEM JUMPS: 64
             )
             
             await self.change_presence(status=discord.Status.online, activity=activity)
-            print("[LOBOTOMİ INFO] | DURUM BAŞARIYLA GÜNCELLENDİ.", flush=True)
             
             if not self.tracking_enabled:
-                print("[LOBOTOMİ INFO] | LOL TAKİBİ KAPALI, KALAN İŞLEMLER İPTAL EDİLDİ.",flush=True)
                 return
 
             if not hasattr(self, "tft_players"):
