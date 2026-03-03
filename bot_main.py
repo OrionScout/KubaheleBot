@@ -322,107 +322,116 @@ U 78:89 ER:04 MODEM JUMPS: 64
     
     @tasks.loop(seconds=60)
     async def check_league_playtime(self):
-
-        if not self.is_awake:
-            return
+        print("[LOBOTOMİ INFO] | ANA DÖNGÜ TETİKLENDİ...", flush=True)
         
-        onlCnt = 0
-        for guild in self.guilds:
-            for member in guild.members:
-                if member.status != discord.Status.offline and not member.bot:
-                    onlCnt += 1
-        
-        activity = discord.Activity(
-            type=discord.ActivityType.watching,
-            name=f"{onlCnt} kişi çevrimiçi"
-        )
-        
-        await self.change_presence(status=discord.Status.online, activity=activity)
-        
-        if not self.tracking_enabled:
-            return
+        try:
+            if not self.is_awake:
+                print("[LOBOTOMİ HATA] | KOMA DURUMU TESPİT EDİLDİ, DÖNGÜ DURDURULUYOR...", flush=True)
+                return
+            
+            print("[LOBOTOMİ INFO] | KULLANICILAR SAYILIYOR...", flush=True)
+            
+            onlCnt = 0
+            for guild in self.guilds:
+                for member in guild.members:
+                    if member.status != discord.Status.offline and not member.bot:
+                        onlCnt += 1
+            
+            activity = discord.Activity(
+                type=discord.ActivityType.watching,
+                name=f"{onlCnt} kişi aktif"
+            )
+            
+            await self.change_presence(status=discord.Status.online, activity=activity)
+            print("[LOBOTOMİ INFO] | DURUM BAŞARIYLA GÜNCELLENDİ.", flush=True)
+            
+            if not self.tracking_enabled:
+                print("[LOBOTOMİ INFO] | LOL TAKİBİ KAPALI, KALAN İŞLEMLER İPTAL EDİLDİ.",flush=True)
+                return
 
-        if not hasattr(self, "tft_players"):
-            self.tft_players = set()
+            if not hasattr(self, "tft_players"):
+                self.tft_players = set()
 
-        TARGET_GAME = "League of Legends"
+            TARGET_GAME = "League of Legends"
 
-        for guild in self.guilds:
-            for member in guild.members:
-                if member.bot:
-                    continue
+            for guild in self.guilds:
+                for member in guild.members:
+                    if member.bot:
+                        continue
 
-                is_bannable_league = False
-                is_currently_playing_tft = False
+                    is_bannable_league = False
+                    is_currently_playing_tft = False
 
-                if member.activities:
-                    for activity in member.activities:
-                        if (
-                            isinstance(activity, (discord.Game, discord.Activity))
-                            and activity.name == TARGET_GAME
-                        ):
-                            details = getattr(activity, "details", "") or ""
-                            state = getattr(activity, "state", "") or ""
-
+                    if member.activities:
+                        for activity in member.activities:
                             if (
-                                "Teamfight Tactics" in details
-                                or "Teamfight Tactics" in state
+                                isinstance(activity, (discord.Game, discord.Activity))
+                                and activity.name == TARGET_GAME
                             ):
-                                is_currently_playing_tft = True
-                                is_bannable_league = False
-                            else:
-                                is_bannable_league = True
+                                details = getattr(activity, "details", "") or ""
+                                state = getattr(activity, "state", "") or ""
 
-                            break
+                                if (
+                                    "Teamfight Tactics" in details
+                                    or "Teamfight Tactics" in state
+                                ):
+                                    is_currently_playing_tft = True
+                                    is_bannable_league = False
+                                else:
+                                    is_bannable_league = True
 
-                if is_currently_playing_tft:
-                    if member.id not in self.tft_players:
-                        current_time = datetime.now().strftime("%H:%M:%S")
-                        print(
-                            f"[MODERASYON] {current_time} | {member.name} TFT oynuyor, görmezden gelinecek"
-                        )
-                        self.tft_players.add(member.id)
-                else:
-                    if member.id in self.tft_players:
-                        self.tft_players.discard(member.id)
+                                break
 
-                if is_bannable_league:
-                    if member.id in self.safe_users:
-                        is_bannable_league = False
-
-                user_id = member.id
-
-                if is_bannable_league:
-                    if user_id not in self.lol_start_times:
-                        self.lol_start_times[user_id] = datetime.now()
-                        current_time = datetime.now().strftime("%H:%M:%S")
-                        print(
-                            f"[MODERASYON] {current_time} | {member.name} LoL oynuyor, sayaç başlatıldı"
-                        )
+                    if is_currently_playing_tft:
+                        if member.id not in self.tft_players:
+                            current_time = datetime.now().strftime("%H:%M:%S")
+                            print(
+                                f"[MODERASYON] {current_time} | {member.name} TFT oynuyor, görmezden gelinecek"
+                            )
+                            self.tft_players.add(member.id)
                     else:
-                        limit = getattr(self, "ban_limit_minutes", 30)
-                        duration = datetime.now() - self.lol_start_times[user_id]
+                        if member.id in self.tft_players:
+                            self.tft_players.discard(member.id)
 
-                        if duration > timedelta(minutes=limit):
-                            try:
-                                current_time = datetime.now().strftime("%H:%M:%S")
-                                await member.send(
-                                    f"{limit} dakikadan uzun süre LoL oynadığın için ban yedin."
-                                )
-                                await guild.ban(member, reason="LoL Limiti Geçildi")
-                                print(
-                                    f"[MODERASYON] {current_time} | {member.name} BANLANDI"
-                                )
-                                del self.lol_start_times[user_id]
-                            except Exception as e:
-                                current_time = datetime.now().strftime("%H:%M:%S")
-                                print(
-                                    f"[HATA] {current_time} | {member.name} banlanamadı: {e}"
-                                )
+                    if is_bannable_league:
+                        if member.id in self.safe_users:
+                            is_bannable_league = False
 
-                else:
-                    if user_id in self.lol_start_times:
-                        del self.lol_start_times[user_id]
+                    user_id = member.id
+
+                    if is_bannable_league:
+                        if user_id not in self.lol_start_times:
+                            self.lol_start_times[user_id] = datetime.now()
+                            current_time = datetime.now().strftime("%H:%M:%S")
+                            print(
+                                f"[MODERASYON] {current_time} | {member.name} LoL oynuyor, sayaç başlatıldı"
+                            )
+                        else:
+                            limit = getattr(self, "ban_limit_minutes", 30)
+                            duration = datetime.now() - self.lol_start_times[user_id]
+
+                            if duration > timedelta(minutes=limit):
+                                try:
+                                    current_time = datetime.now().strftime("%H:%M:%S")
+                                    await member.send(
+                                        f"{limit} dakikadan uzun süre LoL oynadığın için ban yedin."
+                                    )
+                                    await guild.ban(member, reason="LoL Limiti Geçildi")
+                                    print(
+                                        f"[MODERASYON] {current_time} | {member.name} BANLANDI"
+                                    )
+                                    del self.lol_start_times[user_id]
+                                except Exception as e:
+                                    current_time = datetime.now().strftime("%H:%M:%S")
+                                    print(
+                                        f"[HATA] {current_time} | {member.name} banlanamadı: {e}"
+                                    )
+
+                    else:
+                        if user_id in self.lol_start_times:
+                            del self.lol_start_times[user_id]
+        except Exception as e:
+            print(f"[FATAL] | ANA DÖNGÜ ÇÖKTÜ: {e}", flush=True)
 
     @check_league_playtime.before_loop
     async def bfrloop(self):
