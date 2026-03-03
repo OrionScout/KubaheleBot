@@ -319,7 +319,7 @@ U 78:89 ER:04 MODEM JUMPS: 64
                 print(f"[HATA] {current_time} | Onur Ucuz banlandı, ancak Tuna'nın DMleri kapalı. Loglarda bunu görüyorsanız, durumu Tuna'ya bildirin.")
             except Exception as e:
                 print(f"[HATA] {current_time} | {e}")
-
+    
     @tasks.loop(seconds=60)
     async def check_league_playtime(self):
         if not self.tracking_enabled:
@@ -423,6 +423,12 @@ U 78:89 ER:04 MODEM JUMPS: 64
                     if user_id in self.lol_start_times:
                         del self.lol_start_times[user_id]
 
+    @check_league_playtime.before_loop
+    async def bfrloop(self):
+        print(f"[INFO] {current_time} | stat loop discord bağlantısı bekliyor...")
+        await self.wait_until_ready()
+        print(f"[INFO] {current_time} | discord hazır, stat loop aktif")
+    
 
 async def alinti_yap(message_content, author_name, author_username, avatar_url):
     CANVAS_WIDTH = 800
