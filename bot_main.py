@@ -325,8 +325,12 @@ U 78:89 ER:04 MODEM JUMPS: 64
         print("[LOBOTOMİ INFO] | ANA DÖNGÜ TETİKLENDİ...", flush=True)
         
         try:
+            if not self.is_ready():
+                print("[LOBOTOMİ INFO] | DISCORD BAĞLANTISI SAĞLAMA ALINMADI, BEKLENİLİYOR...", flush=True)
+                return
+            
             if not self.is_awake:
-                print("[LOBOTOMİ HATA] | KOMA DURUMU TESPİT EDİLDİ, DÖNGÜ DURDURULUYOR...", flush=True)
+                print("[LOBOTOMİ INFO] | KOMA DURUMU TESPİT EDİLDİ, DÖNGÜ DURDURULUYOR...", flush=True)
                 return
             
             print("[LOBOTOMİ INFO] | KULLANICILAR SAYILIYOR...", flush=True)
