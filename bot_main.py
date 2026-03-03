@@ -322,8 +322,6 @@ U 78:89 ER:04 MODEM JUMPS: 64
     
     @tasks.loop(seconds=60)
     async def check_league_playtime(self):
-        if not self.tracking_enabled:
-            return
 
         if not self.is_awake:
             return
@@ -341,7 +339,8 @@ U 78:89 ER:04 MODEM JUMPS: 64
         
         await self.change_presence(status=discord.Status.online, activity=activity)
         
-        print(f"🔄 Durum güncellendi: {onlCnt} kişi çevrimiçi.")
+        if not self.tracking_enabled:
+            return
 
         if not hasattr(self, "tft_players"):
             self.tft_players = set()
