@@ -340,6 +340,8 @@ U 78:89 ER:04 MODEM JUMPS: 64
         )
         
         await self.change_presence(status=discord.Status.online, activity=activity)
+        
+        print(f"🔄 Durum güncellendi: {onlCnt} kişi çevrimiçi.")
 
         if not hasattr(self, "tft_players"):
             self.tft_players = set()
