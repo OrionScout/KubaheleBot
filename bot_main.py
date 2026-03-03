@@ -162,7 +162,7 @@ class Client(discord.Client):
         self.check_league_playtime.start()
         self.tree.copy_global_to(guild=MY_GUILD)
         current_time = datetime.now().strftime("%H:%M:%S")
-        print(f"[INFO] {current_time} | LOG KAYDI BAŞLADI")
+        print(f"[INFO] {current_time} | LOG KAYDI BAŞLADI - LOBOTOMİ İŞLEMDE")
         print(
             f"[UYARI] {current_time} | bot sunucusu Greenwich saatiyle çalıştığı için bütün log kayıtları Türkiye saatinden 3 saat geri gözükecektir"
         )
@@ -432,12 +432,6 @@ U 78:89 ER:04 MODEM JUMPS: 64
                             del self.lol_start_times[user_id]
         except Exception as e:
             print(f"[FATAL] | ANA DÖNGÜ ÇÖKTÜ: {e}", flush=True)
-
-    @check_league_playtime.before_loop
-    async def bfrloop(self):
-        print(f"[INFO] {current_time} | stat loop discord bağlantısı bekliyor...")
-        await self.wait_until_ready()
-        print(f"[INFO] {current_time} | discord hazır, stat loop aktif")
     
 
 async def alinti_yap(message_content, author_name, author_username, avatar_url):
